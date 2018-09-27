@@ -1,0 +1,75 @@
+using UnityEngine;
+using UnityEditor;
+using UnityEngine.Networking;
+
+/// <summary>
+/// A script to automatically activate Networked Objects after entering Play Mode.
+/// </summary>
+/// <description>
+/// This class adds a Tools > Networked Objects Activator menu containing options to
+/// activate or deactivate the script.
+/// When enabled, networked objects will be activated in playmode
+///
+/// Based on an idea on this thread:
+/// http://forum.unity3d.com/threads/157502-Executing-first-scene-in-build-settings-when-pressing-play-button-in-editor
+/// </description>
+[InitializeOnLoad]
+static class AutoActivateNetworkedObjects
+{
+    // Properties are remembered as editor preferences.
+    private const string _editorPrefAutoActivateObjects = "AutoActivateNetworkedObjects.AutoActivateObjects";
+
+    // Static constructor binds a playmode-changed callback.
+    // [InitializeOnLoad] above makes sure this gets executed.
+    static AutoActivateNetworkedObjects()
+    {
+        EditorApplication.playModeStateChanged += OnPlayModeChanged;
+    }
+
+    [MenuItem("Tools/Networked Objects Activator/Activate Objects", true)]
+    private static bool ShowLoadMasterOnPlay()
+    {
+        return !ActivateNetworkedObjects;
+    }
+
+    [MenuItem("Tools/Networked Objects Activator/Activate Objects")]
+    private static void EnableLoadMasterOnPlay()
+    {
+        ActivateNetworkedObjects = true;
+    }
+
+    [MenuItem("Tools/Networked Objects Activator/Don't Activate Objects", true)]
+    private static bool ShowDontLoadMasterOnPlay()
+    {
+        return ActivateNetworkedObjects;
+    }
+
+    [MenuItem("Tools/Networked Objects Activator/Don't Activate Objects")]
+    private static void DisableLoadMasterOnPlay()
+    {
+        ActivateNetworkedObjects = false;
+    }
+
+    // Play mode change callback handles the scene load/reload.
+    private static void OnPlayModeChanged(PlayModeStateChange state)
+    {
+        if (!ActivateNetworkedObjects)
+        {
+            return;
+        }
+
+        if (state == PlayModeStateChange.EnteredPlayMode)
+        {
+            foreach (NetworkIdentity item in Resources.FindObjectsOfTypeAll<NetworkIdentity>())
+    		{
+    			item.gameObject.SetActive(true);
+    		}
+        }
+    }
+
+    private static bool ActivateNetworkedObjects
+    {
+        get { return EditorPrefs.GetBool(_editorPrefAutoActivateObjects, false); }
+        set { EditorPrefs.SetBool(_editorPrefAutoActivateObjects, value); }
+    }
+}
