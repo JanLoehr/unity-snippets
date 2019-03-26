@@ -1,0 +1,27 @@
+[CustomEditor(typeof(GizmoForVector3))]
+public class VectorEditor : Editor
+{
+    private void OnSceneGUI()
+    {
+        GizmoForVector3 gizmoForV3 = target as GizmoForVector3;
+
+        Vector3 objectPos = vector3.transform.position;
+
+        EditorGUI.BeginChangeCheck();
+
+        Vector3 vector3 = Handles.PositionHandle(gizmoForV3.Vector3 + objectPos, Quaternion.identity) - objectPos;
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            Undo.RecordObject(pointingTarget, "Change Pointing Target");
+            gizmoForV3.Vector3 = vector3;
+        }
+    }
+
+    [DrawGizmo(GizmoType.Selected | GizmoType.Active)]
+    static void DrawGizmo(GizmoForVector3 scr, GizmoType gizmoType)
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(scr.Vector3 + scr.transform.position, .2f);
+    }
+}
