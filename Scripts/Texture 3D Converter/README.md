@@ -2,7 +2,7 @@
 
 ## Quickstart
 
-Copy the script within the Editor folder to your Unity project. Make sure it ends up within an Editor folder, so it will be only user for the Editor and not for builds.
+Copy the script within the Editor folder to your Unity project. Make sure it ends up within an Editor folder, so it will be only used for the Editor and not for builds.
 
 A new item in the menu bar will appear under "Tools -> Texture 3D Converter".
 
